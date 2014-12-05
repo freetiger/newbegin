@@ -14,7 +14,7 @@ class ProductSpec(models.Model):
     update_date = models.DateTimeField(auto_now=True, verbose_name='更新日期' )
 
     def __unicode__(self):
-        return self.name
+        return self.name+":"+self.value
     
     class Meta:
         ordering = ['-update_date']
@@ -45,8 +45,8 @@ class BaseProduct(models.Model):
         
 #销售产品（如：Intel CPU，其下又可以细分不同版本型号i4，i5，i6、颜色白色，灰色。Intel CPU就是基础产品，白色i5Intel CPU就是销售产品）
 class Product(models.Model):
-    base_product = models.ForeignKey(BaseProduct)   #TODO 如何易用
-    product_spec = models.ManyToManyField(ProductSpec)   #TODO 如何易用
+    base_product = models.ForeignKey(BaseProduct, verbose_name='基础产品' )   #TODO 如何易用
+    product_spec = models.ManyToManyField(ProductSpec, verbose_name='产品规格' )   #TODO 如何易用 , style_fields=['m2m_transfer' , ]
     #以下各个销售产品可以有不同的值
     unit = models.CharField(max_length=30, default="件", verbose_name='单位' )      #计数单位
     price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='价格' )    #单价 #max_digits：数字允许的最大位数；decimal_places：小数的最大位数
