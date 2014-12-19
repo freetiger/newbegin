@@ -5,6 +5,8 @@ Created on 2014年11月26日
 @author: heyuxing
 '''
 from django.db import models
+from django import forms
+from salemanagement.forms import CustomerForm
 
 #产品规格specification
 class ProductSpec(models.Model):
@@ -46,7 +48,7 @@ class BaseProduct(models.Model):
 #销售产品（如：Intel CPU，其下又可以细分不同版本型号i4，i5，i6、颜色白色，灰色。Intel CPU就是基础产品，白色i5Intel CPU就是销售产品）
 class Product(models.Model):
     base_product = models.ForeignKey(BaseProduct, verbose_name='基础产品' )   #TODO 如何易用
-    product_spec = models.ManyToManyField(ProductSpec, verbose_name='产品规格' )   #TODO 如何易用 , style_fields=['m2m_transfer' , ]
+    product_spec = models.ManyToManyField(ProductSpec, blank=True, verbose_name='产品规格' )   #TODO 如何易用 , style_fields=['m2m_transfer' , ]
     #以下各个销售产品可以有不同的值
     unit = models.CharField(max_length=30, default="件", verbose_name='单位' )      #计数单位
     price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='价格' )    #单价 #max_digits：数字允许的最大位数；decimal_places：小数的最大位数
@@ -56,8 +58,13 @@ class Product(models.Model):
     create_date = models.DateTimeField(auto_now_add=True, verbose_name='创建日期' )
     update_date = models.DateTimeField(auto_now=True, verbose_name='更新日期' )
     
+    
+    
     def __unicode__(self):
-        return self.base_product.name
+        productShow = " "
+        for item in self.product_spec.select_related():
+            productShow+=str(item)+" "
+        return str(self.base_product)+productShow
     
     class Meta:
         ordering = ['-update_date']
@@ -75,6 +82,7 @@ class Customer(models.Model):
     member_no = models.CharField(max_length=30, blank=True, verbose_name='会员卡号' )  #会员卡号
     create_date = models.DateTimeField(auto_now_add=True, verbose_name='创建日期' )
     update_date = models.DateTimeField(auto_now=True, verbose_name='更新日期' )
+    forms.model = CustomerForm
 
     def __unicode__(self):
         return self.name
@@ -84,32 +92,10 @@ class Customer(models.Model):
         verbose_name='客户' 
         verbose_name_plural='客户信息' 
         
-#订单元素
-class OrderItem(models.Model):
-    product = models.ForeignKey(Product)    #产品
-    #
-    should_pay = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='应付金额' )  #应付金额
-    price = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='价格' )    #单价 #max_digits：数字允许的最大位数；decimal_places：小数的最大位数
-    cost = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='成本' )  #成本
-    discount = models.IntegerField(default=100, verbose_name='折扣' )  #折扣 100制
-    point = models.IntegerField(default=0, verbose_name='积分' )   #积分
-    number = models.IntegerField(default=1, verbose_name='数量' )   #数量
-    create_date = models.DateTimeField(auto_now_add=True, verbose_name='创建日期' )
-    update_date = models.DateTimeField(auto_now=True, verbose_name='更新日期' )
-
-    def __unicode__(self):
-        return self.product.name
-    
-    class Meta:
-        ordering = ['-update_date']
-        verbose_name='订单元素' 
-        verbose_name_plural='订单元素' 
-        
 #订单，一次消费
 class Order(models.Model):
     sale_code = models.CharField(max_length=50, verbose_name='订单号' ) #销售单号
     customer = models.ForeignKey(Customer)  #客户
-    order_item = models.ManyToManyField(OrderItem)  #订单元素（订单子项）
     should_pay = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='应付金额' )  #应付金额
     pre_pay = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='预付金额' )  #预付金额
     actual_pay = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='实付金额' )  #实付金额
@@ -128,5 +114,25 @@ class Order(models.Model):
         verbose_name='订单' 
         verbose_name_plural='订单' 
         
+#订单元素
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order)    #订单
+    product = models.ForeignKey(Product)    #产品
+    #
+    should_pay = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='应付金额' )  #应付金额
+    price = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='价格' )    #单价 #max_digits：数字允许的最大位数；decimal_places：小数的最大位数
+    cost = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='成本' )  #成本
+    discount = models.IntegerField(default=100, verbose_name='折扣' )  #折扣 100制
+    point = models.IntegerField(default=0, verbose_name='积分' )   #积分
+    number = models.IntegerField(default=1, verbose_name='数量' )   #数量
+    create_date = models.DateTimeField(auto_now_add=True, verbose_name='创建日期' )
+    update_date = models.DateTimeField(auto_now=True, verbose_name='更新日期' )
 
+    def __unicode__(self):
+        return str(self.product)
+    
+    class Meta:
+        ordering = ['-update_date']
+        verbose_name='订单元素' 
+        verbose_name_plural='订单元素' 
 
