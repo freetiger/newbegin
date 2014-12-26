@@ -49,6 +49,10 @@ class ProductSpecAdmin(object):
     search_fields = ('name', 'value')
     #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
     reversion_enable = True
+    #相关模块操作
+    use_related_menu=True
+    #操作列表
+    list_operate=['add', 'change', 'delete', 'detail', '<a href="www.github.com">github</a>', '<a href="http://www.github.com">http_github</a>'  ]
     
         
 #基础产品（如：Intel CPU，其下又可以细分不同版本型号i4，i5，i6、颜色白色，灰色。Intel CPU就是基础产品，白色i5Intel CPU就是标准产品）
@@ -116,4 +120,13 @@ xadmin.site.register(Product, ProductAdmin)
 xadmin.site.register(Customer, CustomerAdmin)
 # xadmin.site.register(OrderItem, OrderItemAdmin)
 xadmin.site.register(Order, OrderAdmin)
+
+
+#自定义插件导入
+
+from django.utils.importlib import import_module
+# import_module('plugins.hello')
+import_module('plugins.operatelist')
+    
+
 
