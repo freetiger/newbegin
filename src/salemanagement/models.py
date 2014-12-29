@@ -135,4 +135,23 @@ class OrderItem(models.Model):
         ordering = ['-update_date']
         verbose_name='订单元素' 
         verbose_name_plural='订单元素' 
+        
+class Test(models.Model):
+    name = models.CharField(max_length=30)
+    password = models.CharField(max_length=30)
+    GENDER_CHOICE = (
+        (u'M', u'Male'),
+        (u'F', u'Female'),
+    )
+    gender = models.CharField(max_length=2,choices = GENDER_CHOICE)
+    birthday = models.DateField(null=True)
+    img = models.ImageField(upload_to='photo',null=True,blank=True)
+    phoneNum = models.CharField(max_length=13,null=True,blank=True)
+    email = models.EmailField(null=True,blank=True)
+    hobbies = models.CharField(max_length=100,null=True,blank=True)
+    regTime = models.DateTimeField(null=True,blank=True)
+    bio = models.TextField(null = True,blank=True)
+    
+    def __unicode__(self):
+        return self.name
 

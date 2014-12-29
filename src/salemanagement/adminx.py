@@ -7,7 +7,7 @@ Created on 2014年11月26日
 import xadmin
 from xadmin.views.base import CommAdminView
 # from xadmin.plugins.inline import Inline
-from salemanagement.models import ProductSpec, BaseProduct, Product, Customer, OrderItem, Order
+from salemanagement.models import ProductSpec, BaseProduct, Product, Customer, OrderItem, Order, Test
 from salemanagement.forms import CustomerForm
 
 class GolbeSetting(object):
@@ -113,6 +113,10 @@ class OrderAdmin(object):
     #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
     reversion_enable = True
     
+#
+class TestAdmin(object):
+    list_display = ('name', 'img',  )
+    pass
 
 xadmin.site.register(ProductSpec, ProductSpecAdmin)
 xadmin.site.register(BaseProduct, BaseProductAdmin)
@@ -120,6 +124,7 @@ xadmin.site.register(Product, ProductAdmin)
 xadmin.site.register(Customer, CustomerAdmin)
 # xadmin.site.register(OrderItem, OrderItemAdmin)
 xadmin.site.register(Order, OrderAdmin)
+xadmin.site.register(Test, TestAdmin)
 
 
 #自定义插件导入

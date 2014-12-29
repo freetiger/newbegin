@@ -94,3 +94,7 @@ TEMPLATE_DIRS = (
     BASE_DIR+'/plugins/templates',
 )
 
+MEDIA_ROOT = os.path.join(BASE_DIR,'media').replace('\\','/')+'/'
+MEDIA_URL = '/media/'
+
+
