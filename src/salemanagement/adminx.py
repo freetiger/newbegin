@@ -28,6 +28,7 @@ class GolbeSetting(object):
            'reversion':u'操作记录',  
     }  
     globe_search_models = [ProductSpec, BaseProduct, Product, Customer, OrderItem, Order]
+    
 xadmin.site.register(CommAdminView, GolbeSetting)
 
 #参考newbegin.urls
@@ -42,32 +43,34 @@ xadmin.site.register(CommAdminView, GolbeSetting)
 # 
 # xadmin.site.register(Revision, ReversionAdmin)
 
-#产品规格specification
-class ProductSpecAdmin(object):
-    list_display = ('name', 'value', 'create_date', 'update_date' )
-    #设置搜索框和其模糊搜索的范围
-    search_fields = ('name', 'value')
+class BaseAdmin(object):
+    #导出
+    list_export = ()
+    list_export_fixed = ('xlsx', 'xls', 'csv', 'xml', 'json')
     #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
     reversion_enable = True
-    #相关模块操作
-    use_related_menu=True
+        #相关模块操作
+    use_related_menu=False
     #操作列表
     list_operate=['add', 'change', 'delete', 'detail', '<a href="www.github.com">github</a>', '<a href="http://www.github.com">http_github</a>'  ]
     
+#产品规格specification
+class ProductSpecAdmin(BaseAdmin):
+    list_display = ('name', 'value', 'create_date', 'update_date' )
+    #设置搜索框和其模糊搜索的范围
+    search_fields = ('name', 'value')
         
 #基础产品（如：Intel CPU，其下又可以细分不同版本型号i4，i5，i6、颜色白色，灰色。Intel CPU就是基础产品，白色i5Intel CPU就是标准产品）
-class BaseProductAdmin(object):
+class BaseProductAdmin(BaseAdmin):
     list_display = ('name', 'code', 'pinyin', 'unit', 'price', 'cost', 'point', 'create_date', 'update_date' )
     #设置搜索框和其模糊搜索的范围
     search_fields = ['name', 'code', 'pinyin']
     #采用搜索框，搜索时才查询相关数据
     #relfield_style = 'fk-ajax'
-    #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
-    reversion_enable = True
     
         
 #标准产品（如：Intel CPU，其下又可以细分不同版本型号i4，i5，i6、颜色白色，灰色。Intel CPU就是基础产品，白色i5Intel CPU就是标准产品）
-class ProductAdmin(object):
+class ProductAdmin(BaseAdmin):
     list_display = ('base_product', 'product_spec', 'unit', 'price', 'cost', 'point', 'create_date', 'update_date' )
     #设置搜索框和其模糊搜索的范围
     search_fields = ['base_product', 'product_spec', ]
@@ -76,27 +79,21 @@ class ProductAdmin(object):
 #     style_fields = {'product_spec': 'checkbox-inline'}
 #     style_fields = {'product_spec': 'wysi_ck'}
 #     style_fields = {'product_spec': 'm2m_tree'}
-    #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
-    reversion_enable = True
       
 
 #客户信息
-class CustomerAdmin(object):
+class CustomerAdmin(BaseAdmin):
     list_display = ('name', 'pinyin', 'phone', 'address', 'birth', 'point', 'member_no', 'create_date', 'update_date', )
     #设置搜索框和其模糊搜索的范围
     search_fields = ['name', 'pinyin', 'phone', 'address', 'birth', 'member_no',]
-    #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
-    reversion_enable = True
-    form = CustomerForm
+    #form = CustomerForm
     
         
 #订单元素
-class OrderItemAdmin(object):
+class OrderItemAdmin(BaseAdmin):
     list_display = ('order', 'product', 'should_pay', 'price', 'cost', 'discount', 'point', 'number', 'create_date', 'update_date',)
     #设置搜索框和其模糊搜索的范围
     search_fields = ['order', 'product', ]
-    #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
-    reversion_enable = True
     
 class OrderItemInline(object):    #StackedInline
     model = OrderItem
@@ -104,14 +101,12 @@ class OrderItemInline(object):    #StackedInline
     #style = 'accordion'
             
 #订单，一次消费
-class OrderAdmin(object):
+class OrderAdmin(BaseAdmin):
     list_display = ('sale_code', 'customer', 'should_pay', 'pre_pay', 'actual_pay', 'had_pay', 'point', 'cost', 'discount', 'create_date', 'update_date', )
     #设置搜索框和其模糊搜索的范围 TODO order_item
     search_fields = ['sale_code', 'customer', ]
     #
     inlines = [OrderItemInline, ]
-    #数据版本控制，默认记录10个版本，可以调整。恢复删除的数据
-    reversion_enable = True
     
 #
 class TestAdmin(object):
@@ -131,7 +126,9 @@ xadmin.site.register(Test, TestAdmin)
 
 from django.utils.importlib import import_module
 # import_module('plugins.hello')
+# import_module('plugins.formfilter')   
+# import_module('plugins.productfilter')   
 import_module('plugins.operatelist')
-    
-
+import_module('plugins.export')
+import_module('plugins.fieldtrigger')   
 
