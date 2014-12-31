@@ -26,8 +26,8 @@ class ProductSpec(models.Model):
 #基础产品（如：Intel CPU，其下又可以细分不同版本型号i4，i5，i6、颜色白色，灰色。Intel CPU就是基础产品，白色i5Intel CPU就是标准产品）
 class BaseProduct(models.Model):
     name = models.CharField(max_length=30, verbose_name='产品名称' )  #名称
-    code = models.CharField(max_length=50, verbose_name='产品编码' )  #编码
-    pinyin = models.CharField(max_length=60, verbose_name='产品拼音' )    #名称拼音
+    code = models.CharField(max_length=50, null=True, blank=True, verbose_name='产品编码' )  #编码
+    pinyin = models.CharField(max_length=60, null=True, blank=True, verbose_name='产品拼音' )    #名称拼音
     #以下各个销售产品可以有不同的值
     unit = models.CharField(max_length=30, default="件", verbose_name='单位' )      #计数单位
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name='价格' )    #单价 #max_digits：数字允许的最大位数；decimal_places：小数的最大位数
@@ -74,7 +74,7 @@ class Product(models.Model):
 #客户信息
 class Customer(models.Model):
     name = models.CharField(max_length=30, verbose_name='客户姓名' )  #名称
-    pinyin = models.CharField(max_length=60, verbose_name='姓名拼音' )    #名称拼音
+    pinyin = models.CharField(max_length=60, blank=True, verbose_name='姓名拼音' )    #名称拼音
     phone = models.CharField(max_length=11, blank=True, verbose_name='手机号' ) #手机号码
     address = models.CharField(max_length=128, blank=True, verbose_name='联系地址' )  #地址
     birth = models.DateField(null=True, blank=True, verbose_name='出生日期' )  #出生日期
@@ -94,7 +94,7 @@ class Customer(models.Model):
         
 #订单，一次消费
 class Order(models.Model):
-    sale_code = models.CharField(max_length=50, verbose_name='订单号' ) #销售单号
+    sale_code = models.CharField(max_length=50, blank=True, verbose_name='订单号' ) #销售单号
     customer = models.ForeignKey(Customer)  #客户
     should_pay = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='应付金额' )  #应付金额
     pre_pay = models.DecimalField(max_digits=8, decimal_places=2, default="0.00", verbose_name='预付金额' )  #预付金额

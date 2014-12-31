@@ -52,7 +52,13 @@ class BaseAdmin(object):
         #相关模块操作
     use_related_menu=False
     #操作列表
-    list_operate=['add', 'change', 'delete', 'detail', '<a href="www.github.com">github</a>', '<a href="http://www.github.com">http_github</a>'  ]
+    #list_operate=['add', 'change', 'delete', 'detail', '<a href="www.github.com">github</a>', '<a href="http://www.github.com">http_github</a>'  ]
+    list_operate=['delete', 'detail', ]
+    
+#     search_fileds = ('book__name', 'book__title', 'book__price', 'category')  # 设置搜索栏范围，如果有外键，要注明外键的哪个字段，双下划线
+#     list_display = ('book', 'category')  # 在页面上显示的字段，若不设置则显示 models.py 中 __unicode__(self) 中所返回的值
+#     list_display_links = ('category')  # 设置页面上哪个字段可单击进入详细页面
+#     fields = ('category', 'book')  # 设置添加/修改详细信息时，哪些字段显示，在这里 remark 字段将不显示
     
 #产品规格specification
 class ProductSpecAdmin(BaseAdmin):
@@ -67,13 +73,14 @@ class BaseProductAdmin(BaseAdmin):
     search_fields = ['name', 'code', 'pinyin']
     #采用搜索框，搜索时才查询相关数据
     #relfield_style = 'fk-ajax'
+    #fields = ('name', 'unit', 'price', 'cost', 'point', )
     
         
 #标准产品（如：Intel CPU，其下又可以细分不同版本型号i4，i5，i6、颜色白色，灰色。Intel CPU就是基础产品，白色i5Intel CPU就是标准产品）
 class ProductAdmin(BaseAdmin):
     list_display = ('base_product', 'product_spec', 'unit', 'price', 'cost', 'point', 'create_date', 'update_date' )
     #设置搜索框和其模糊搜索的范围
-    search_fields = ['base_product', 'product_spec', ]
+    search_fields = ['base_product__name', 'base_product__code', 'base_product__pinyin', 'product_spec__name', 'product_spec__value']  # 设置搜索栏范围，如果有外键，要注明外键的哪个字段，双下划线
     style_fields = {'product_spec': 'm2m_transfer', 'base_product':'m2m_transfer',}
 #     style_fields = {'product_spec': "radio-inline"}
 #     style_fields = {'product_spec': 'checkbox-inline'}
@@ -85,7 +92,7 @@ class ProductAdmin(BaseAdmin):
 class CustomerAdmin(BaseAdmin):
     list_display = ('name', 'pinyin', 'phone', 'address', 'birth', 'point', 'member_no', 'create_date', 'update_date', )
     #设置搜索框和其模糊搜索的范围
-    search_fields = ['name', 'pinyin', 'phone', 'address', 'birth', 'member_no',]
+    search_fields = ['name', 'pinyin', 'phone', 'address', 'member_no',]
     #form = CustomerForm
     
         
